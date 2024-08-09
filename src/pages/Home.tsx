@@ -1,18 +1,16 @@
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 
-const Home = () => {
+export const Home = () => {
   return (
     <main>
       <h1>GitHub Grand Prix</h1>
       <nav>
         <ul>
           <li>
-            <Link href="/">hoge</Link>
+            <Link to="/pr">PR</Link>
           </li>
         </ul>
       </nav>
     </main>
   );
 };
-
-export default Home;
