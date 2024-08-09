@@ -1,32 +1,39 @@
 {
-	"name": "github-grand-prix",
-	"private": true,
-	"version": "0.0.0",
-	"type": "module",
-	"license": "MIT",
-	"scripts": {
-		"dev": "vite",
-		"build": "tsc -b && vite build",
-		"preview": "vite preview",
-		"lint": "biome lint app components src",
-		"lint:fix": "biome check --apply app components src",
-		"type-check": "tsc"
-	},
-	"dependencies": {
-		"@tanstack/react-router": "^1.47.1",
-		"react": "^18.3.1",
-		"react-dom": "^18.3.1"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "1.8.3",
-		"@tanstack/router-devtools": "^1.47.1",
-		"@tanstack/router-plugin": "^1.47.0",
-		"@types/react": "^18.3.3",
-		"@types/react-dom": "^18.3.0",
-		"@vitejs/plugin-react-swc": "^3.5.0",
-		"globals": "^15.9.0",
-		"typescript": "^5.5.3",
-		"vite": "^5.4.0",
-		"vite-tsconfig-paths": "^5.0.1"
-	}
+  "name": "github-grand-prix",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lint": "biome lint app components src",
+    "lint:fix": "biome check --apply app components src",
+    "type-check": "tsc",
+    "codegen": "graphql-codegen --config ./src/graphql/codegen.ts"
+  },
+  "dependencies": {
+    "@tanstack/react-router": "^1.47.1",
+    "graphql": "^16.9.0",
+    "graphql-request": "^7.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.8.3",
+    "@graphql-codegen/cli": "^5.0.2",
+    "@graphql-codegen/typescript": "^4.0.9",
+    "@graphql-codegen/typescript-operations": "^4.2.3",
+    "@graphql-codegen/typescript-react-query": "^6.1.0",
+    "@tanstack/router-devtools": "^1.47.1",
+    "@tanstack/router-plugin": "^1.47.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "globals": "^15.9.0",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.0",
+    "vite-tsconfig-paths": "^5.0.1"
+  }
 }
