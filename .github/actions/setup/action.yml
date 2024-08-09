@@ -27,3 +27,6 @@ runs:
       - name: Install dependencies
         shell: bash
         run: pnpm install
+      - name: Generate GraphQL types
+        shell: bash
+        run: pnpm codegen

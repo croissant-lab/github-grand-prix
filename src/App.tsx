@@ -4,7 +4,7 @@ export const App = () => {
       <h1>GitHub Grand Prix</h1>
       <nav>
         <ul>
-          <li></li>
+          <li>hoge</li>
         </ul>
       </nav>
     </main>
