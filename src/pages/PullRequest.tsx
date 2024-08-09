@@ -1,10 +1,10 @@
 export const PullRequest = () => {
   return (
     <main>
-      <h1>Pull Request</h1>
+      <h1>GitHub Grand Prix</h1>
       <nav>
         <ul>
-          <li>aaa</li>
+          <li>aa </li>
         </ul>
       </nav>
     </main>
