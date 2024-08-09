@@ -11,9 +11,11 @@
     "lint": "biome lint app components src",
     "lint:fix": "biome check --apply app components src",
     "type-check": "tsc",
-    "codegen": "graphql-codegen --config ./src/graphql/codegen.ts"
+    "codegen": "graphql-codegen --config codegen.ts",
+    "codegen:watch": "graphql-codegen  --watch --config codegen.ts"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.51.23",
     "@tanstack/react-router": "^1.47.1",
     "graphql": "^16.9.0",
     "graphql-request": "^7.1.0",
@@ -26,8 +28,11 @@
     "@graphql-codegen/typescript": "^4.0.9",
     "@graphql-codegen/typescript-operations": "^4.2.3",
     "@graphql-codegen/typescript-react-query": "^6.1.0",
+    "@graphql-typed-document-node/core": "^3.2.0",
+    "@parcel/watcher": "^2.4.1",
     "@tanstack/router-devtools": "^1.47.1",
     "@tanstack/router-plugin": "^1.47.0",
+    "@types/node": "^22.1.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react-swc": "^3.5.0",

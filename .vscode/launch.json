@@ -6,6 +6,12 @@
       "name": "Run Dev Server",
       "request": "launch",
       "type": "node-terminal"
+    },
+    {
+      "command": "pnpm codegen:watch",
+      "name": "Codegen",
+      "request": "launch",
+      "type": "node-terminal"
     }
   ]
 }

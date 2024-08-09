@@ -1,0 +1,3 @@
+# 型を補完するファイル
+schema: 'schema.graphql'
+documents: 'src/**/*.{graphql,ts,tsx,gql}'

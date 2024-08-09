@@ -20,6 +20,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
-  "exclude": ["node_modules", ".next"]
+  "include": ["src", "codegen.ts"],
+  "exclude": ["node_modules", ".next", "src/gql"]
 }
