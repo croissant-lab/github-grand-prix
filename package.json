@@ -10,7 +10,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome lint app components src",
-    "lint:fix": "biome check --apply app components src"
+    "lint:fix": "biome check --apply app components src",
+    "type-check": "tsc"
   },
   "dependencies": {
     "react": "^18",
