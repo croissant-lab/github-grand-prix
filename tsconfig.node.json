@@ -20,5 +20,5 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": ["vite.config.ts"],
-  "exclude": ["node_modules", ".next", "src/gql"]
+  "exclude": ["node_modules", "src/gql"]
 }

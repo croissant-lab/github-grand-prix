@@ -9,4 +9,7 @@ export const Post = () => {
       },
     },
   });
+
+  console.log(isLoading);
+  console.log(data);
 };
