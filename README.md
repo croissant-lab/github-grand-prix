@@ -35,8 +35,8 @@
    1. `.env`ファイルをリポジトリのルートディレクトリに作成
 
       ```sh
-       GITHUB_TOKEN="YOUR_PERSONAL_ACCESS_TOKEN"
-       ENDPOINT="https://api.github.com/graphql"
+       VITE_GITHUB_TOKEN="YOUR_PERSONAL_ACCESS_TOKEN"
+       VITE_ENDPOINT="https://api.github.com/graphql"
        ```
 
 ### 2. 毎回実行
@@ -74,7 +74,7 @@
    ```ts
    import { use<任意のQuery名> } from '@/src/gql/graphql';
    
-   const { data, loading, error } = use<任意のQuery名>();
+   const { data, loading, error } = use<任意のQuery名>Query();
    ```
 
 ### おとくなけいじばん

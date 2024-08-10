@@ -1,7 +1,7 @@
 import { graphql } from '@/src/gql';
 
-graphql(`
-  query MostCommented{
+export const mostCommentedQueryDocument = graphql(`
+  query MostCommentedQueryDocument{
     viewer {
       login
     }
