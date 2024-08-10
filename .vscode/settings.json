@@ -17,5 +17,9 @@
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
   "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.preferences.importModuleSpecifier": "non-relative"
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  // 誤って開くと重くなるためPlaintextとして認識させる
+  "files.associations": {
+    "**/graphql.ts": "plaintext"
+  }
 }
