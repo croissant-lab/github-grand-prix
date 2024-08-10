@@ -25,6 +25,7 @@ export const PullRequest = () => {
   const handleSubmit = () => {
     executeQuery();
   };
+  console.log(data);
 
   return (
     <main>
@@ -44,6 +45,7 @@ export const PullRequest = () => {
       <button type="button" onClick={handleSubmit}>
         Submit
       </button>
+      <div>isPending: {isPending ? 'true' : 'false'}</div>
     </main>
   );
 };
