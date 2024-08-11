@@ -27,7 +27,7 @@ export const timeUntilApproveQueryDocument = graphql(`
               }
             }
           }
-          comments(first: 50){
+          comments(first: 100){
             totalCount
             nodes {
               url 
