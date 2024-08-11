@@ -3,6 +3,9 @@ import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
+
 // Import the generated route tree
 import { routeTree } from './routeTree.gen';
 
@@ -25,6 +28,8 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+dayjs.extend(isBetween);
 
 // biome-ignore lint/style/noNonNullAssertion: <explanation>
 const rootElement = document.getElementById('root')!;

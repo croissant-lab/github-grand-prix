@@ -17,7 +17,10 @@ import { Route as rootRoute } from './routes/__root'
 // Create Virtual Routes
 
 const IndexLazyImport = createFileRoute('/')()
-const PrIndexLazyImport = createFileRoute('/pr/')()
+const PullRequestIndexLazyImport = createFileRoute('/pullRequest/')()
+const PullRequestTimeUntilApproveIndexLazyImport = createFileRoute(
+  '/pullRequest/timeUntilApprove/',
+)()
 
 // Create/Update Routes
 
@@ -26,10 +29,22 @@ const IndexLazyRoute = IndexLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 
-const PrIndexLazyRoute = PrIndexLazyImport.update({
-  path: '/pr/',
+const PullRequestIndexLazyRoute = PullRequestIndexLazyImport.update({
+  path: '/pullRequest/',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/pr/index.lazy').then((d) => d.Route))
+} as any).lazy(() =>
+  import('./routes/pullRequest/index.lazy').then((d) => d.Route),
+)
+
+const PullRequestTimeUntilApproveIndexLazyRoute =
+  PullRequestTimeUntilApproveIndexLazyImport.update({
+    path: '/pullRequest/timeUntilApprove/',
+    getParentRoute: () => rootRoute,
+  } as any).lazy(() =>
+    import('./routes/pullRequest/timeUntilApprove/index.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 
 // Populate the FileRoutesByPath interface
 
@@ -42,11 +57,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
-    '/pr/': {
-      id: '/pr/'
-      path: '/pr'
-      fullPath: '/pr'
-      preLoaderRoute: typeof PrIndexLazyImport
+    '/pullRequest/': {
+      id: '/pullRequest/'
+      path: '/pullRequest'
+      fullPath: '/pullRequest'
+      preLoaderRoute: typeof PullRequestIndexLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/pullRequest/timeUntilApprove/': {
+      id: '/pullRequest/timeUntilApprove/'
+      path: '/pullRequest/timeUntilApprove'
+      fullPath: '/pullRequest/timeUntilApprove'
+      preLoaderRoute: typeof PullRequestTimeUntilApproveIndexLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -56,7 +78,8 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
-  PrIndexLazyRoute,
+  PullRequestIndexLazyRoute,
+  PullRequestTimeUntilApproveIndexLazyRoute,
 })
 
 /* prettier-ignore-end */
@@ -68,14 +91,18 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/pr/"
+        "/pullRequest/",
+        "/pullRequest/timeUntilApprove/"
       ]
     },
     "/": {
       "filePath": "index.lazy.tsx"
     },
-    "/pr/": {
-      "filePath": "pr/index.lazy.tsx"
+    "/pullRequest/": {
+      "filePath": "pullRequest/index.lazy.tsx"
+    },
+    "/pullRequest/timeUntilApprove/": {
+      "filePath": "pullRequest/timeUntilApprove/index.lazy.tsx"
     }
   }
 }

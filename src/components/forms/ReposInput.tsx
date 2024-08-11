@@ -48,12 +48,14 @@ export const useReposInput = ({ storeName }: UseReposInputArgs) => {
   };
 
   const getRepo = (index: number) => repo[index] ?? { owner: '', name: '' };
+  const getAllRepos = () => repo;
 
   return {
     onChange: handleChange,
     storeName,
     repo,
     getRepo,
+    getAllRepos,
   };
 };
 

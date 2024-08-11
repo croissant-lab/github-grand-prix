@@ -81,6 +81,10 @@
 
 1. Query作成時は補完が効きます。VS Codeの補完機能を活用しましょう
 
+1. [Altair](https://altairgraphql.dev/)からも叩けるようにしています。  
+`/docs/altair`のファイルをimportしてください（別途`header`の`Authorization`の設定が必要です）
+   - [Altair GraphQLクライアントIDEを使用する](https://docs.github.com/ja/graphql/guides/using-the-explorer#using-the-altair-graphql-client-ide)
+
 ### 参考リンク
 
 - [GitHub GraphQL API](https://docs.github.com/ja/graphql)
