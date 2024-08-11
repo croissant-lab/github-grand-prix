@@ -1,10 +1,13 @@
+import { TimeToApproveByFileChange } from '@/src/components/charts/TimeToApproveByFileChange';
 import { DateInput, useDateInput } from '@/src/components/forms/DateInput';
 import { Input, useInput } from '@/src/components/forms/Input';
 import { ReposInput, useReposInput } from '@/src/components/forms/ReposInput';
 import type { TimeUntilApproveQueryDocumentQuery } from '@/src/gql/graphql';
-import { isInRange } from '@/src/helpers/date';
+import { diffByDay, isInRange } from '@/src/helpers/date';
+import { roundDigit } from '@/src/helpers/number';
 import { useGraphQLQueries } from '@/src/services/common/useGraphQL';
 import { timeUntilApproveQueryDocument } from '@/src/services/pullRequest/timeToApprove';
+import type { ComponentProps } from 'react';
 
 export const PullRequestUntilApprove = () => {
   const { value: approveNumber, ...approveNumberInputProps } = useInput({
@@ -115,6 +118,23 @@ export const PullRequestUntilApprove = () => {
             )}
           </div>
         </li>
+        <li>
+          <div>
+            レポジトリ別PR作成者数
+            {refinedData?.prCountByRepository?.map((repoData, i) => (
+              <div key={i}>
+                {repoData.repo}
+                <ul>
+                  {repoData.pr.map(({ author, count }, j) => (
+                    <li key={j}>
+                      {author}: {count}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </li>
       </ol>
       <h3>Most</h3>
       <div>
@@ -143,6 +163,40 @@ export const PullRequestUntilApprove = () => {
           ))}
         </ul>
       </div>
+      <h3>PullRequest</h3>
+      <dl>
+        <dt>
+          PR OpenからApprove {approveNumber ?? '1'}
+          件もらうまで（14日以上は排除）
+        </dt>
+        <dd>
+          <ol>
+            <li>
+              最大: {refinedData?.maxPrApproveTime}日（
+              {(refinedData?.maxPrApproveTime ?? 1) * 24}時間）
+            </li>
+            <li>
+              最小: {refinedData?.minPrApproveTime}日（
+              {(refinedData?.minPrApproveTime ?? 1) * 24}時間）
+            </li>
+            <li>
+              平均: {refinedData?.avgPrApproveTime}日（
+              {(refinedData?.avgPrApproveTime ?? 1) * 24}時間）
+            </li>
+            <li>
+              中央値: {refinedData?.medianPrApproveTime}日（
+              {(refinedData?.medianPrApproveTime ?? 1) * 24}時間）
+            </li>
+          </ol>
+        </dd>
+      </dl>
+      <div>
+        <h3>グラフ</h3>
+        <div>Approveまでの時間と修正ファイル数の相関関係</div>
+        <TimeToApproveByFileChange
+          data={refinedData?.prApproveTimeByFileChangeChartData ?? []}
+        />
+      </div>
     </main>
   );
 };
@@ -158,54 +212,52 @@ function refinePrs(
   console.log('allRepos', data);
 
   // とりあえずフラットにする
-  const flattened = data.flatMap(
-    (repo) => repo.repository?.pullRequests?.nodes ?? [],
-  );
-
-  const filteredByDates = flattened.filter((pr) => {
-    return isInRange(pr?.createdAt, { start, end });
-  });
-  const comments = filteredByDates.flatMap(
-    (repo) => repo?.comments?.nodes ?? [],
-  );
+  const flattened = data
+    .flatMap((repo) => repo.repository?.pullRequests?.nodes ?? [])
+    .filter((pr) => {
+      return isInRange(pr?.createdAt, { start, end });
+    });
+  const comments = flattened.flatMap((repo) => repo?.comments?.nodes ?? []);
 
   // マージPR数のカウント
-  const repositoryCount = filteredByDates.reduce<
-    { repo: string; count: number }[]
-  >((acc, cur) => {
-    if (!cur?.repository?.name) {
-      return acc;
-    }
-    const target = acc.find((v) => v.repo === cur.repository.name);
-    if (target) {
-      target.count++;
-    } else {
-      acc.push({ repo: cur.repository.name, count: 1 });
-    }
+  const repositoryCount = flattened.reduce<{ repo: string; count: number }[]>(
+    (acc, cur) => {
+      if (!cur?.repository?.name) {
+        return acc;
+      }
+      const target = acc.find((v) => v.repo === cur.repository.name);
+      if (target) {
+        target.count++;
+      } else {
+        acc.push({ repo: cur.repository.name, count: 1 });
+      }
 
-    return acc;
-  }, []);
+      return acc;
+    },
+    [],
+  );
 
   // PR作者のカウント
-  const prOwnerCount = filteredByDates.reduce<
-    { author: string; PrCount: number }[]
-  >((acc, cur) => {
-    const t = cur?.author?.login;
-    if (!t) {
-      return acc;
-    }
-    const target = acc.find((v) => v.author === t);
-    if (target) {
-      target.PrCount++;
-    } else {
-      acc.push({ author: t, PrCount: 1 });
-    }
+  const prOwnerCount = flattened.reduce<{ author: string; PrCount: number }[]>(
+    (acc, cur) => {
+      const t = cur?.author?.login;
+      if (!t) {
+        return acc;
+      }
+      const target = acc.find((v) => v.author === t);
+      if (target) {
+        target.PrCount++;
+      } else {
+        acc.push({ author: t, PrCount: 1 });
+      }
 
-    return acc;
-  }, []);
+      return acc;
+    },
+    [],
+  );
 
   // PR作者ごとのファイル修正数カウント
-  const prOwnerFileFixedCount = filteredByDates.reduce<
+  const prOwnerFileFixedCount = flattened.reduce<
     { author: string; fileFixedCount: number }[]
   >((acc, cur) => {
     const t = cur?.changedFiles ?? 0;
@@ -222,11 +274,42 @@ function refinePrs(
     return acc;
   }, []);
 
+  const prCountByRepository = flattened
+    .reduce<{ repo: string; pr: { author: string; count: number }[] }[]>(
+      (acc, cur) => {
+        const repo = cur?.repository?.name;
+        const author = cur?.author?.login;
+
+        if (!repo || !author) {
+          return acc;
+        }
+        const target = acc.find((v) => v.repo === repo);
+        if (target) {
+          const authorCount = target.pr.find((v) => v.author === author);
+          if (authorCount) {
+            authorCount.count++;
+          } else {
+            target.pr.push({ author, count: 1 });
+          }
+        } else {
+          acc.push({ repo, pr: [{ author, count: 1 }] });
+        }
+        return acc;
+      },
+      [],
+    )
+    .map((repoData) => {
+      return {
+        repo: repoData.repo,
+        pr: repoData.pr.sort((a, b) => b.count - a.count),
+      };
+    });
+
   // 最もコメント数が多かったPRランキング
-  filteredByDates.sort(
+  flattened.sort(
     (a, b) => (b?.totalCommentsCount ?? 0) - (a?.totalCommentsCount ?? 0),
   );
-  const commentedPr = filteredByDates.map((repo) => ({
+  const commentedPr = flattened.map((repo) => ({
     author: repo?.author?.login,
     title: repo?.title,
     url: repo?.url,
@@ -240,13 +323,79 @@ function refinePrs(
     )
     .filter((_, i) => i < 10);
 
+  // PRのApprove規定人数までの時間
+  const prApproveTimeList = flattened
+    .map((pr) => ({
+      utl: pr?.url,
+      createdAt: pr?.createdAt,
+      lastApprovedAt: pr?.reviews?.nodes?.at(-1)?.createdAt,
+      repository: pr?.repository?.name,
+      changedFiles: pr?.changedFiles,
+      timeUntilFirstApprove: diffByDay(
+        pr?.createdAt,
+        pr?.reviews?.nodes?.[0]?.createdAt,
+      ),
+      timeUntilLastApprove: diffByDay(
+        pr?.createdAt,
+        pr?.reviews?.nodes?.at(-1)?.createdAt,
+      ),
+    }))
+    .filter((pr) => pr.timeUntilLastApprove < 14);
+
+  const maxPrApproveTime = prApproveTimeList.reduce(
+    (acc, cur) => Math.max(acc, cur.timeUntilLastApprove),
+    0,
+  );
+  const minPrApproveTime = prApproveTimeList.reduce(
+    (acc, cur) => Math.min(acc, cur.timeUntilLastApprove),
+    Number.POSITIVE_INFINITY,
+  );
+  const avgPrApproveTime =
+    prApproveTimeList.reduce((acc, cur) => acc + cur.timeUntilLastApprove, 0) /
+    prApproveTimeList.length;
+
+  const medianPrApproveTime = prApproveTimeList.length
+    ? prApproveTimeList.sort(
+        (a, b) => a.timeUntilLastApprove - b.timeUntilLastApprove,
+      )[Math.floor(prApproveTimeList.length / 2)].timeUntilLastApprove
+    : 0;
+
+  const prApproveTimeByFileChangeChartData = prApproveTimeList.reduce<
+    ComponentProps<typeof TimeToApproveByFileChange>['data']
+  >((acc, cur) => {
+    const target = acc.find((v) => v.repo === cur.repository);
+    if (target) {
+      target.records.push({
+        approveTime: cur.timeUntilLastApprove,
+        fileChange: cur.changedFiles ?? 0,
+      });
+    } else {
+      acc.push({
+        repo: cur.repository ?? '',
+        records: [
+          {
+            approveTime: cur.timeUntilLastApprove,
+            fileChange: cur.changedFiles ?? 0,
+          },
+        ],
+      });
+    }
+    return acc;
+  }, []);
+
   return {
     repositoryCount: repositoryCount.sort((a, b) => b.count - a.count),
     prOwnerCount: [...prOwnerCount].sort((a, b) => b.PrCount - a.PrCount),
     prOwnerFileFixedCount: prOwnerFileFixedCount.sort(
       (a, b) => b.fileFixedCount - a.fileFixedCount,
     ),
+    prCountByRepository,
     commentedPr,
     commentsOrderByReactions,
+    maxPrApproveTime: roundDigit(maxPrApproveTime, 4),
+    minPrApproveTime: roundDigit(minPrApproveTime, 4),
+    avgPrApproveTime: roundDigit(avgPrApproveTime, 4),
+    medianPrApproveTime: roundDigit(medianPrApproveTime, 4),
+    prApproveTimeByFileChangeChartData,
   };
 }

@@ -9,3 +9,8 @@ export const isInRange = (
   // startの0:00:00からend+1の0:00:00までを含む
   return dayjs(date).isBetween(start, addEnd, null, '[)');
 };
+
+export const diffByDay = (start: string, end: string) => {
+  const showDecimal = true;
+  return dayjs(end).diff(dayjs(start), 'day', showDecimal);
+};
