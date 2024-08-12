@@ -138,7 +138,7 @@ export const PullRequestUntilApprove = () => {
       </ol>
       <h3>Most</h3>
       <div>
-        最もコメント数が多かったPR
+        最もコメント数が多かったPR（平均{refinedData?.avgCommentCount ?? 0}件）
         <ul>
           {refinedData?.commentedPr?.map((pr, i) => (
             <li key={i}>
@@ -316,6 +316,13 @@ function refinePrs(
     commentsCount: repo?.totalCommentsCount,
   }));
 
+  // PRのコメント平均数
+  const avgCommentCount =
+    commentedPr.reduce<number>(
+      (acc, cur) => acc + (cur.commentsCount ?? 0),
+      0,
+    ) / commentedPr.length;
+
   // コメントごとのリアクションランキング
   const commentsOrderByReactions = [...comments]
     .sort(
@@ -391,6 +398,7 @@ function refinePrs(
     ),
     prCountByRepository,
     commentedPr,
+    avgCommentCount,
     commentsOrderByReactions,
     maxPrApproveTime: roundDigit(maxPrApproveTime, 4),
     minPrApproveTime: roundDigit(minPrApproveTime, 4),
