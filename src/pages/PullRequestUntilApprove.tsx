@@ -61,7 +61,7 @@ export const PullRequestUntilApprove = () => {
         <Input {...approveNumberInputProps} />
       </div>
       <div>
-        取得するPRの最大数（この最大数から日付で絞り込みます）
+        レポジトリごとの取得するPRの最大数（この最大数から日付で絞り込みます）
         <Input {...maxPrNumberInputProps} />
       </div>
       <div>
@@ -159,6 +159,19 @@ export const PullRequestUntilApprove = () => {
               <span>[{pr?.reactions.totalCount}]</span>
               {'  '}
               <a href={pr?.url}>{pr?.author?.login ?? ''}のコメント</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        最もたくさんApproveをつけた人
+        <ul>
+          {refinedData?.approveReviewersCount.map(({ author, count }, i) => (
+            <li key={i}>
+              <span>
+                {author} ({count}件)
+              </span>
             </li>
           ))}
         </ul>
@@ -390,6 +403,27 @@ function refinePrs(
     return acc;
   }, []);
 
+  // レビュワー
+  const approveReviewersCount = flattened.reduce<
+    { author: string; count: number }[]
+  >((acc, cur) => {
+    const reviews = cur?.reviews?.nodes ?? [];
+    const reviewersByOnePr = reviews.map(
+      (review) => review?.author?.login ?? '',
+    );
+
+    reviewersByOnePr.forEach((reviewer) => {
+      const target = acc.find((v) => v.author === reviewer);
+      if (target) {
+        target.count++;
+      } else {
+        acc.push({ author: reviewer, count: 1 });
+      }
+    });
+
+    return acc;
+  }, []);
+
   return {
     repositoryCount: repositoryCount.sort((a, b) => b.count - a.count),
     prOwnerCount: [...prOwnerCount].sort((a, b) => b.PrCount - a.PrCount),
@@ -405,5 +439,8 @@ function refinePrs(
     avgPrApproveTime: roundDigit(avgPrApproveTime, 4),
     medianPrApproveTime: roundDigit(medianPrApproveTime, 4),
     prApproveTimeByFileChangeChartData,
+    approveReviewersCount: approveReviewersCount.sort(
+      (a, b) => b.count - a.count,
+    ),
   };
 }
