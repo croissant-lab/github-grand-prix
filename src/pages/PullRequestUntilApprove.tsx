@@ -1,3 +1,4 @@
+import { BarChart } from '@/src/components/charts/BarChart';
 import { TimeToApproveByFileChange } from '@/src/components/charts/TimeToApproveByFileChange';
 import { DateInput, useDateInput } from '@/src/components/forms/DateInput';
 import { Input, useInput } from '@/src/components/forms/Input';
@@ -95,6 +96,14 @@ export const PullRequestUntilApprove = () => {
               </div>
             ))}
           </div>
+          <BarChart
+            data={
+              refinedData?.repositoryCount?.map(({ repo: name, count }) => ({
+                name,
+                count,
+              })) ?? []
+            }
+          />
         </li>
         <li>
           <div>
@@ -105,6 +114,16 @@ export const PullRequestUntilApprove = () => {
               </div>
             ))}
           </div>
+          <BarChart
+            data={
+              refinedData?.prOwnerCount?.map(
+                ({ author: name, PrCount: count }) => ({
+                  name,
+                  count,
+                }),
+              ) ?? []
+            }
+          />
         </li>
         <li>
           <div>
@@ -117,6 +136,17 @@ export const PullRequestUntilApprove = () => {
               ),
             )}
           </div>
+
+          <BarChart
+            data={
+              refinedData?.prOwnerFileFixedCount?.map(
+                ({ author: name, fileFixedCount: count }) => ({
+                  name,
+                  count,
+                }),
+              ) ?? []
+            }
+          />
         </li>
         <li>
           <div>
@@ -130,6 +160,15 @@ export const PullRequestUntilApprove = () => {
                       {author}: {count}
                     </li>
                   ))}
+
+                  <BarChart
+                    data={
+                      repoData.pr.map(({ author: name, count }) => ({
+                        name,
+                        count,
+                      })) ?? []
+                    }
+                  />
                 </ul>
               </div>
             ))}
