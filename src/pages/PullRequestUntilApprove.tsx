@@ -204,7 +204,7 @@ export const PullRequestUntilApprove = () => {
       </div>
 
       <div>
-        最もたくさんApproveをつけた人
+        もっともApproveをつけた人
         <ul>
           {refinedData?.approveReviewersCount.map(({ author, count }, i) => (
             <li key={i}>
@@ -213,6 +213,16 @@ export const PullRequestUntilApprove = () => {
               </span>
             </li>
           ))}
+          <BarChart
+            data={
+              refinedData?.approveReviewersCount.map(
+                ({ author: name, count }) => ({
+                  name,
+                  count,
+                }),
+              ) ?? []
+            }
+          />
         </ul>
       </div>
       <h3>PullRequest</h3>

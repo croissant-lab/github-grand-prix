@@ -20,22 +20,35 @@ export const BarChart = ({ data }: Props) => {
     return null;
   }
 
-  const customData = data.filter(({ name }, i) => i < 3 && name !== 'yn1323');
+  const all = false;
+  const yAxisUnit = '';
+
+  const customData = all
+    ? data.filter(({ name }, i) => true)
+    : data.filter(({ name }, i) => i < 4 && name !== 'yn1323');
 
   return (
-    <LibBarChart width={600} height={400} data={customData} barSize={60}>
+    <LibBarChart
+      width={all ? 1600 : 600}
+      height={400}
+      data={customData}
+      barSize={60}
+      style={{
+        marginTop: 100,
+        marginLeft: 100,
+      }}
+    >
       <CartesianGrid strokeDasharray="3 3" />
       <XAxis
         dataKey="name"
-        interval={0}
         style={{
           fontSize: '0.8rem',
         }}
       />
-      <YAxis />
+      <YAxis unit={yAxisUnit} fontSize={10} />
       <Tooltip />
       <Legend />
-      <Bar dataKey="count" fill="#8884d8" />
+      <Bar dataKey="count" label="PR数" fill="#8884d8" />
     </LibBarChart>
   );
 };
