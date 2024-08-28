@@ -24,7 +24,7 @@ export const BarChart = ({ data }: Props) => {
   const yAxisUnit = '';
 
   const customData = all
-    ? data.filter(({ name }, i) => true)
+    ? data.filter((_) => true)
     : data.filter(({ name }, i) => i < 4 && name !== 'yn1323');
 
   return (

@@ -4,7 +4,6 @@ interface ImportMetaEnv {
   readonly VITE_ENDPOINT: string;
 }
 
-// biome-ignore lint/correctness/noUnusedVariables: <explanation>
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
