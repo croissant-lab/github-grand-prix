@@ -1,9 +1,13 @@
 import { graphql } from '@/src/gql';
 
 export const timeUntilApproveQueryDocument = graphql(`
-  query timeUntilApproveQueryDocument($owner: String!, $repo: String!, $approveNumber: Int = 1, $maxPullRequestNumber: Int = 10) {
+  query timeUntilApproveQueryDocument($owner: String!, $repo: String!, $approveNumber: Int = 1, $maxPullRequestNumber: Int = 10, $after: String = "") {
     repository(owner: $owner, name: $repo) {
-      pullRequests(first: $maxPullRequestNumber, states: MERGED, orderBy: {field: CREATED_AT, direction: DESC},) {
+      pullRequests(first: $maxPullRequestNumber, states: MERGED, orderBy: {field: CREATED_AT, direction: DESC}, after: $after) {
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
         nodes {
           repository{
             name

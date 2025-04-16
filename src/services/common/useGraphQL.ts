@@ -66,14 +66,64 @@ export function useGraphQLQueries<TResult, TVariables>(
       queryKey: [(document as any).definitions[0].name.value, variables],
       enabled,
       queryFn: async ({ queryKey }: { queryKey: unknown[] }) => {
-        return await request({
-          url: ENDPOINT,
-          document,
-          variables: queryKey[1] ? queryKey[1] : undefined,
-          requestHeaders: {
-            Authorization: `Bearer ${GITHUB_TOKEN}`,
+        console.log('queryKey');
+        let hasNextPage = true;
+        let endCursor = '';
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        let prNodes: any[] = [];
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        const maxFetchCount = (queryKey[1] as any)?.maxFetchCount ?? 3;
+        let requestCount = 0;
+
+        const endCursorRequest = async (after = '') =>
+          await request({
+            url: ENDPOINT,
+            document,
+            variables: queryKey[1] ? { ...queryKey[1], after } : undefined,
+            requestHeaders: {
+              Authorization: `Bearer ${GITHUB_TOKEN}`,
+            },
+          });
+
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        const firstRequest = (await endCursorRequest('')) as any;
+        hasNextPage = firstRequest.repository.pullRequests.pageInfo.hasNextPage;
+        endCursor = firstRequest.repository.pullRequests.pageInfo.endCursor;
+        prNodes = firstRequest.repository.pullRequests.nodes;
+
+        while (hasNextPage && endCursor) {
+          // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+          const secondRequest = (await endCursorRequest(endCursor)) as any;
+          hasNextPage =
+            secondRequest.repository.pullRequests.pageInfo.hasNextPage;
+          endCursor = secondRequest.repository.pullRequests.pageInfo.endCursor;
+
+          // console.log(secondRequest);
+          // console.log(hasNextPage);
+          // console.log(endCursor);
+
+          prNodes = [
+            ...prNodes,
+            ...secondRequest.repository.pullRequests.nodes,
+          ];
+          requestCount++;
+          if (requestCount >= maxFetchCount - 1) {
+            hasNextPage = false;
+          }
+        }
+
+        const result = {
+          ...firstRequest,
+          repository: {
+            ...firstRequest.repository,
+            pullRequests: {
+              ...firstRequest.repository.pullRequests,
+              nodes: prNodes,
+            },
           },
-        });
+        };
+
+        return result;
       },
     })),
   });

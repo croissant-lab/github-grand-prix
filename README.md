@@ -85,6 +85,13 @@
 `/docs/altair`のファイルをimportしてください（別途`header`の`Authorization`の設定が必要です）
    - [Altair GraphQLクライアントIDEを使用する](https://docs.github.com/ja/graphql/guides/using-the-explorer#using-the-altair-graphql-client-ide)
 
+### 環境変数例
+
+```sh
+VITE_GITHUB_TOKEN="YOUR_PERSONAL_ACCESS_TOKEN"
+VITE_ENDPOINT="https://api.github.com/graphql"
+```
+
 ### 参考リンク
 
 - [GitHub GraphQL API](https://docs.github.com/ja/graphql)

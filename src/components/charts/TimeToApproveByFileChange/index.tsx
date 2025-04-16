@@ -21,8 +21,8 @@ export const TimeToApproveByFileChange = ({ data }: Props) => {
   console.log(data);
   return (
     <ScatterChart
-      width={730}
-      height={250}
+      width={1200}
+      height={800}
       margin={{
         top: 20,
         right: 20,
@@ -40,8 +40,9 @@ export const TimeToApproveByFileChange = ({ data }: Props) => {
           key={i}
           name={d.repo}
           data={d.records
-            // .filter((r) => r.approveTime < 2)
-            // .filter((r) => r.fileChange < 16)
+            // 外れ値
+            // .filter((r) => r.approveTime < 85)
+            // .filter((r) => r.fileChange < 50)
             .map((record) => ({
               x: roundDigit(record.approveTime, 4) * 24,
               y: record.fileChange,
